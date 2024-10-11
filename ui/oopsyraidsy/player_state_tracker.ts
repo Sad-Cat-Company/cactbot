@@ -28,7 +28,7 @@ import { OopsyOptions } from './oopsy_options';
 
 const emptyId = 'E0000000';
 const timestampFieldIdx = 1;
-const dummyPartyEntry: Party = { id: emptyId, name: '???', worldId: 0, job: 0, inParty: true };
+const dummyPartyEntry: Party = { id: emptyId, name: 'DUMMY_NAME', worldId: 0, job: 0, inParty: true };
 
 // TODO: add this to effect_id.ts?
 const raiseEffectId = '94';
@@ -584,6 +584,9 @@ export class PlayerStateTracker {
       return name ?? '???';
     });
 
+    if (missedNames.length > 0)
+      this.DebugDump(timestamp, collected);
+
     // TODO: oopsy could really use mouseover popups for details.
     if (missedNames.length < 4) {
       const nameList = missedNames.map((name) => {
@@ -631,5 +634,22 @@ export class PlayerStateTracker {
     if (idx === -1)
       return;
     this.trackedEvents = this.trackedEvents.slice(idx);
+  }
+
+  private DebugDump(timestamp: number, collected: CollectedBuff): void {
+    console.error('*************** OOPSY MISSED BUFF: DIAGNOSTIC DUMP ***************');
+    console.error(`** Missed buff: ${collected.buffName} [logTime: ${timestamp}]`);
+    console.error(`**   Source: ${collected.sourceId}`);
+    console.error(`**   Targets: [${collected.targetIds.length}] - ${JSON.stringify(collected.targetIds)}`);
+    console.error(`**   Trigger Line: ${collected.splitLine.join('|')}`);
+    console.error(`**   Buff Detail: ${JSON.stringify(collected.buff)}`);
+    console.error(`** PARTY STATE INFO`);
+    console.error(`**   Current Player Id: ${this.myPlayerId ?? 'undef'}`);
+    console.error(`**   Party Ids: ${JSON.stringify(Array.from(this.partyIds))}`);
+    console.error(`**   Dead Ids: ${JSON.stringify(Array.from(this.deadIds))}`);
+    console.error(`**   Combatant Party Info: ${JSON.stringify(this.combatantPartyInfo)}`);
+    console.error(`**   Current Party Info: ${JSON.stringify(this.currPartyInfo)}`);
+    console.error(`**   Pet Id to Owner Id: ${JSON.stringify(this.petIdToOwnerId)}`);
+    console.error('******************************************************************');
   }
 }
