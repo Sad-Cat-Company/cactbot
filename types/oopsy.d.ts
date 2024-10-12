@@ -116,6 +116,7 @@ export type MistakeDetails = {
 export type CollectMistakeDetails = MistakeDetails & {
   collectSeconds?: number; // time to collect before reporting
   suppressSeconds?: number; // time until the same mistake can be re-collected and reported
+  minCount?: number; // for `multipleX` triggers, the # of hits before a mistake is reported
 };
 
 export type MistakeMap = { [mistakeId: string]: string | MistakeDetails };

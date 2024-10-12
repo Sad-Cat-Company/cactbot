@@ -58,6 +58,7 @@ const collectMistakeDefaults = {
   id: 'DUMMY_VALUE', // gets set later
   collectSeconds: 1.5,
   suppressSeconds: 1.5,
+  minCount: 2,
 };
 
 const actorControlFadeInCommandPre62 = '40000010';
@@ -741,6 +742,7 @@ export class DamageTracker {
           // TODO: Add support for alliances if/once we have a config option?
           const trackList = data.party.partyNames_;
           const targeted = (data.collectors ??= {})[sanitizedMistakeId] ??= [];
+          const minCount = mistakeDetails.minCount; // for 'multiple'-type triggers
 
           let mistakePlayers: string[] = [];
           let triggerType: InternalOopsyTriggerType = 'Damage'; // default
@@ -754,7 +756,7 @@ export class DamageTracker {
           } else if (helperType === 'multiple') {
             triggerType = 'Multiple';
             mistakePlayers = trackList.filter(
-              (name) => targeted.filter((target) => target === name).length > 1,
+              (name) => targeted.filter((target) => target === name).length >= minCount,
             );
           }
 
